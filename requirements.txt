@@ -1,0 +1,6 @@
+pytest
+pytest-asyncio
+pytest-mock
+coverage
+flake8
+-e git+https://github.com/WIPACrepo/keycloak-rest-services@v1.1.8#egg=krs

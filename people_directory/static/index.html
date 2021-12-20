@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>IceCube Directory</title>
+<meta name="desciption" content="IceCube directory">
+<meta name="author" content="IceCube">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="shortcut icon" href="/static/favicon.png">
+<link rel="apple-touch-icon" href="/static/apple-touch-icon.png">
+<link rel="stylesheet" href="/static/boilerplate.css?v=7.3.0">
+<link rel="stylesheet" href="/static/main.css">
+</head>
+<body>
+<!--[if IE]>
+<p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience and security.</p>
+<![endif]-->
+<div id="page-container">
+<header>
+  <h1 class="logo"><a href="/" rel="home"><img class="logo" src="/static/icecube-logo_60.png" alt="IceCube" width="228" height="60" /></a></h1>
+  <h1 class="title">Directory</h1>
+  <div class="spacer"></div>
+</header>
+<main>
+  <div class="legend">
+    <h2>Legend</h2>
+    <p>The following notes may apply to personnel listed here:</p>
+    <p>[IL] Institution Lead</p>
+  </div>
+  <div id="form">
+    <h2>Navigation</h2>
+    <p>Filter by institution:
+      <select id="filter">
+        <option value="all" selected="selected">All</option>
+        {% for inst in sorted(insts.values(), key=lambda x: x['name']) %}
+        <option value="{{ inst['group_path'] }}">{{ inst['name'] }}</option>
+        {% end %}
+      </select>
+      <button v-on:click="filter">Filter</button>
+    </p>
+  </div>
+  <article class="display">
+    <div class="user header">
+      <div class="name">Name</div>
+      <div class="user-insts">Institution</div>
+      <div class="phone">Phone</div>
+      <div class="email">E-mail Address</div>
+    </div>
+    <vue-display class="user_list" v-bind:insts="insts" v-bind:users="users" v-bind:filtered_users="filtered_users">
+    {% for user in sorted(users.values(), key=lambda x: x['lastName']+x['firstName']) %}
+    <div class="user">
+      <div class="name">{{ user['lastName'] }}, {{ user['firstName'] }}{% if 'IL' in user %} [IL]{% end %}</div>
+      <div class="user-insts">{% for inst in user['institutions'] %}<span>{{ insts[inst]['name'] if inst in insts else '' }}</span>{% end %}</div>
+      <div class="phone">{{ user['mobile'] }}</div>
+      <div class="email">{{ user['email'] }}</div>
+    </div>
+    {% end %}
+    </vue-display>
+  </article>
+</main>
+<footer>
+  <p class="help">For help, email help at icecube.wisc.edu</p>
+  <p class="copyright">© WIPAC, University of Wisconsin-Madison</p>
+</footer>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/vue@2.6.11"></script>
+<script src="/static/boilerplate.js"></script>
+<script src="/static/main.js"></script>
+<script type="text/javascript">
+var insts = JSON.parse('{% raw json.dumps(insts) %}');
+var users = JSON.parse('{% raw json.dumps(users) %}');
+vue_startup(insts, users);
+</script>
+</body>
+</html>

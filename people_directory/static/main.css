@@ -1,0 +1,210 @@
+body {
+    background: #dddde2;
+}
+#page-container {
+    min-width: 966px;
+    background: #fcfcfc;
+    margin: 0 auto;
+}
+@media all and (min-width: 1350px) {
+    #page-container {
+        width: 1350px;
+        border-left: 1px solid #ccc;
+        border-right: 1px solid #bbb;
+    }
+}
+
+header, header h1, header .account, nav, nav ol, footer {
+    display: inline-flex;
+    margin: 0;
+    padding: 0;
+}
+header, footer {
+    background: #f6f6f6;
+}
+header {
+    border-bottom: 1px solid black;
+    height: 60px;
+    width: 100%;
+}
+header h1.logo {
+    margin-left: .1em;
+    height: 60px;
+    width: 228px;
+    align-items: center;
+    justify-content: center;
+}
+header h1.logo a img {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 60px;
+    text-align: center;
+}
+header h1.title {
+    height: 60px;
+    margin: auto;
+    align-items: center;
+    justify-content: center;
+    font-family: sans-serif;
+    font-weight: normal;
+}
+header .spacer {
+    width: 228px;
+    margin-right: .1em;
+}
+nav ol {
+    margin: 0 1em;
+    vertical-align: top;
+}
+nav li {
+    display: inline-flex;
+    align-items: center;
+    _cursor: pointer;
+    height: 100%;
+}
+nav li a {
+    padding: 0 1em;
+    text-transform: capitalize;
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
+nav li:hover {
+    text-decoration: underline;
+}
+nav li.active {
+    background: #eef;
+}
+#page-container {
+    position: relative;
+    min-height: 100vh;
+}
+footer {
+    align-items: center;
+    border-top: 1px solid black;
+    width: 100%;
+    min-height: 1.5em;
+    position: absolute;
+    bottom: 0;
+}
+footer p.copyright {
+    text-align: right;
+    margin: 0 .25em 0 0;
+    width: 100%;
+}
+footer p.help {
+    text-align: left;
+    margin: 0 .25em;
+    width: 100%;
+}
+
+main {
+    padding: 0 1em 1.5em;
+}
+
+span.code {
+    font-family: monospace;
+    font-size: 133%;
+    background: rgba(0,0,0,0.1);
+}
+span.red {
+    color: red;
+}
+.italics {
+    font-style: italic;
+}
+span.login-link {
+    cursor: pointer;
+    text-decoration: underline;
+    color: blue;
+}
+div.indent {
+    margin-left: 1em;
+}
+div.double_indent {
+    margin-left: 2em;
+}
+
+form.newuser div.entry {
+    padding: 1em;
+}
+form.newuser p {
+    margin: 0;
+    padding: 0 0 .5em;
+}
+
+div.error_box {
+    display: inline-block;
+    margin: 1em 1.5em;
+    padding: .7em;
+    font-size: 16pt;
+    border: 1px solid #666;
+    border-radius: .2em;
+}
+
+article {
+    margin: 1em 0 2em;
+    font-size: 90%;
+}
+
+article .user {
+    display: flex;
+    border-bottom: 1px solid #999;
+    margin: 0 auto;
+    padding: .25em 0;
+    justify-content: space-between;
+}
+
+article .header {
+    font-weight: bold;
+}
+
+article .user>div {
+    overflow-wrap: break-word;
+    margin: 0;
+    padding: 0;
+    flex-grow: 0;
+    flex-shrink: 0;
+}
+
+article .user .name {
+    width: 14em;
+}
+article .user .user-insts {
+    min-width: 14em;
+    margin: auto;
+    flex-shrink: 1;
+    flex-grow: 1;
+}
+article .user .user-insts span {
+    display: block;
+}
+article .user .user-insts span:not(:last-child)::after {
+    content: ",";
+}
+article .user .phone {
+    width: 10em;
+}
+article .user .email {
+    width: 18em;
+    text-align: right;
+}
+@media all and (min-width: 1100px) {
+    article .user .phone {
+        width: 11em;
+    }
+    article .user .email {
+        width: 22em;
+    }
+}
+@media all and (min-width: 1200px) {
+    article .user .phone {
+        width: 12em;
+    }
+    article .user .email {
+        width: 22em;
+    }
+}
