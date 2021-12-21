@@ -5,6 +5,7 @@ Server for people directory
 from functools import partial
 import json
 import logging
+import re
 import os
 
 from tornado.web import RequestHandler, HTTPError
@@ -15,13 +16,14 @@ import motor.motor_asyncio
 
 import krs.token
 
+CLEANR = re.compile('<.*?>')
 def recursive_escape(data):
     if isinstance(data, dict):
-        return {xhtml_escape(k): recursive_escape(v) for k,v in data.items()}
+        return {recursive_escape(k): recursive_escape(v) for k,v in data.items()}
     elif isinstance(data, list):
         return [recursive_escape(v) for v in data]
     else:
-        return xhtml_escape(data)
+        return re.sub(CLEANR, '', data)
 
 def escape_json(data, key=None):
     ret = {} if key else []
