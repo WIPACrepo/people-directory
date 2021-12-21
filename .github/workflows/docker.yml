@@ -5,8 +5,8 @@ on:
   push:
     branches:
       - main
-  release:
-    types: [published]
+    tags:
+      - '*'
   workflow_dispatch:
 
 jobs:
