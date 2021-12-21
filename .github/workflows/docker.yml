@@ -7,6 +7,8 @@ on:
       - main
     tags:
       - '*'
+  release:
+    types: [published]
   workflow_dispatch:
 
 jobs:
@@ -35,6 +37,7 @@ jobs:
         # list of Docker images to use as base name for tags
         images: |
           wipac/people-directory
+          ghcr.io/WIPACRepo/people-directory
         tags: |
             type=ref,event=branch
             type=semver,pattern={{major}}
@@ -47,6 +50,14 @@ jobs:
       with:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+    - name: Login to GitHub Container Registry
+      uses: docker/login-action@v1
+      if: ${{ github.event_name != 'pull_request' }}
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Push Docker Image
       uses: docker/build-push-action@v2
