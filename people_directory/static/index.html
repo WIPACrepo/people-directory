@@ -67,8 +67,8 @@
 <script src="/static/boilerplate.js"></script>
 <script src="/static/main.js"></script>
 <script type="text/javascript">
-var insts = JSON.parse('{% raw json.dumps(insts) %}');
-var users = JSON.parse('{% raw json.dumps(users) %}');
+var insts = JSON.parse('{% raw json.dumps(insts).replace("'", "\\'") %}');
+var users = JSON.parse('{% raw json.dumps(users).replace("'", "\\'") %}');
 vue_startup(insts, users);
 </script>
 </body>
