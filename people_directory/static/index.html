@@ -32,8 +32,8 @@
     <p>Filter by institution:
       <select id="filter">
         <option value="all" selected="selected">All</option>
-        {% for inst in sorted(insts.values(), key=lambda x: x['name']) %}
-        <option value="{{ inst['group_path'] }}">{{ inst['name'] }}</option>
+        {% for inst in sorted(insts.values(), key=lambda x: x.get('name','')) %}
+        <option value="{{ inst['group_path'] }}">{{ inst.get('name') }}</option>
         {% end %}
       </select>
       <button v-on:click="filter">Filter</button>
@@ -46,7 +46,7 @@
       <div class="phone">Phone</div>
       <div class="email">E-mail Address</div>
     </div>
-    <vue-display class="user_list" v-bind:insts="insts" v-bind:users="users" v-bind:filtered_users="filtered_users">
+    <vue-display class="user_list" v-bind:insts="insts" v-bind:users="users" v-bind:filtered_users="filtered_users" v-bind:filtered_insts="filtered_insts">
     {% for user in sorted(users.values(), key=lambda x: x['lastName']+x['firstName']) %}
     <div class="user">
       <div class="name">{{ user['lastName'] }}, {{ user['firstName'] }}{% if 'IL' in user %} [IL]{% end %}</div>

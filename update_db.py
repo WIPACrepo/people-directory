@@ -30,12 +30,13 @@ async def run(experiment, client, db_name, krs_client):
     insts = await krs.institutions.list_insts(experiment, rest_client=krs_client)
 
     users = defaultdict(dict)
-    for group_path in insts:
+    for group_path in list(insts):
         inst = insts[group_path]
         inst['group_path'] = group_path
 
         if 'name' not in inst or 'cite' not in inst:
             logging.info(f'bad inst: {group_path}')
+            del insts[group_path]
             continue
 
         # get active users
@@ -60,6 +61,10 @@ async def run(experiment, client, db_name, krs_client):
 
     # get user details
     for username in list(users):
+        if 'institutions' not in users[username]:
+            logging.info(f'user not in any institution, so dropping: {username}')
+            del users[username]
+            continue
         ret = await krs.users.user_info(username, rest_client=krs_client)
         if ret.get('firstName', '') == '' or ret.get('lastName', '') == '':
             del users[username]
