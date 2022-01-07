@@ -30,7 +30,7 @@
   <div id="form">
     <h2>Navigation</h2>
     <p>Filter by institution:
-      <select id="filter">
+      <select id="filter" autocomplete="off">
         <option value="all" selected="selected">All</option>
         {% for inst in sorted(insts.values(), key=lambda x: x.get('name','')) %}
         <option value="{{ inst['group_path'] }}">{{ inst.get('name') }}</option>
