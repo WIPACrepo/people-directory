@@ -47,7 +47,7 @@
       <div class="email">E-mail Address</div>
     </div>
     <vue-display class="user_list" v-bind:insts="insts" v-bind:users="users" v-bind:filtered_users="filtered_users" v-bind:filtered_insts="filtered_insts">
-    {% for user in sorted(users.values(), key=lambda x: x['lastName']+x['firstName']) %}
+    {% for user in sorted(users.values(), key=lambda x: (x['lastName']+x['firstName']).lower()) %}
     <div class="user">
       <div class="name">{{ user['lastName'] }}, {{ user['firstName'] }}{% if 'IL' in user %} [IL]{% end %}</div>
       <div class="user-insts">{% for inst in user['institutions'] %}<span>{{ insts[inst]['name'] if inst in insts else '' }}</span>{% end %}</div>

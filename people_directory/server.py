@@ -2,6 +2,7 @@
 Server for people directory
 """
 
+from datetime import datetime, timedelta
 from functools import partial
 import json
 import logging
@@ -10,11 +11,10 @@ import os
 
 from tornado.web import RequestHandler, HTTPError
 from tornado.escape import xhtml_escape
-from rest_tools.client import RestClient
 from rest_tools.server import RestServer, from_environment
-import motor.motor_asyncio
 
-import krs.token
+from .people import People
+
 
 CLEANR = re.compile('<.*?>')
 def recursive_escape(data):
@@ -38,17 +38,29 @@ def escape_json(data, key=None):
     return ret
 
 class Main(RequestHandler):
-    def initialize(self, db):
-        self.db = db
+    def initialize(self, people):
+        self.people = people
 
     async def get(self, *args):
         # escape data, just in case
-        ret = await self.db.insts.find(projection={'_id': False}).to_list(100000)
-        insts = escape_json(ret, 'group_path')
-        logging.info(f'{insts}')
-        ret = await self.db.users.find(projection={'_id': False}).to_list(100000)
-        users = escape_json(ret, 'username')
+        insts = escape_json(self.people.institutions.values(), 'group_path')
+        users = escape_json(self.people.users.values(), 'username')
+        for u in users.values():
+            if 'institution' not in u:
+                logging.info(f'{u}')
         self.render('index.html', json=json, insts=insts, users=users)
+
+class Health(RequestHandler):
+    def initialize(self, people):
+        self.people = people
+
+    async def get(self):
+        self.write({
+            'now': datetime.utcnow().isoformat(),
+            'last_update': self.people.last_update.isoformat() if self.people.last_update else 'None',
+        })
+        if (not self.people.last_update) or datetime.utcnow() - self.people.last_update > timedelta(hours=1):
+            self.set_status(400)
 
 def create_server():
     static_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static')
@@ -57,7 +69,7 @@ def create_server():
         'HOST': 'localhost',
         'PORT': 8080,
         'DEBUG': False,
-        'DB_URL': 'mongodb://localhost/people_directory',
+        'EXPERIMENT': 'IceCube',
     }
     config = from_environment(default_config)
 
@@ -66,15 +78,11 @@ def create_server():
     }
 
     kwargs = {}
-
-    logging.info(f'DB: {config["DB_URL"]}')
-    db_url, db_name = config['DB_URL'].rsplit('/', 1)
-    db = motor.motor_asyncio.AsyncIOMotorClient(db_url)
-    logging.info(f'DB name: {db_name}')
-    kwargs['db'] = db[db_name]
+    kwargs['people'] = People(config['EXPERIMENT'])
 
     server = RestServer(static_path=static_path, template_path=static_path, debug=config['DEBUG'])
 
+    server.add_route('/healthz', Health, kwargs)
     server.add_route(r'/(.*)', Main, kwargs)
 
     server.startup(address=config['HOST'], port=config['PORT'])
