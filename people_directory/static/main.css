@@ -53,6 +53,14 @@ header .spacer {
     width: 228px;
     margin-right: .1em;
 }
+header .edit {
+    margin-right: 1em;
+    text-align: right;
+    line-height: 60px;
+}
+header .edit a {
+    text-decoration: none;
+}
 nav ol {
     margin: 0 1em;
     vertical-align: top;
