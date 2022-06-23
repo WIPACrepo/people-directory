@@ -63,14 +63,42 @@ Vue.component('vue-display', {
         return this.insts[group_path].name
       }
       return ''
+    },
+    profile_link: function(prefix, profile) {
+      if (profile == '') {
+        return ''
+      } else {
+        return '<a href="'+prefix+profile+'">'+profile+'</a>'
+      }
+    },
+    phone_link: function(phone) {
+      if (phone == '') {
+        return ''
+      } else {
+        return '<a href="tel:'+phone+'">'+phone+'</a>'
+      }
+    },
+    email_link: function(email) {
+      if (email == '') {
+        return ''
+      } else {
+        return '<a href="mailto:'+email+'">'+email+'</a>'
+      }
     }
   },
   template: `<div class="user_list">
 <div class="user" v-for="user in my_users" :key="user.username">
   <div class="name">{{ user.lastName }}, {{ user.firstName }}<span v-if="user.username in leads"> [IL]</span></div>
   <div class="user-insts"><span v-for="group_path in user.institutions">{{ inst_name(group_path) }}</span></div>
-  <div class="phone">{{ user.mobile }}</div>
-  <div class="email">{{ user.email }}</div>
+  <div class="profiles">
+    <div class="github" v-html="profile_link('https://github.com/', user.github)"></div>
+    <div class="orcid" v-html="profile_link('https://orcid.org/', user.orcid)"></div>
+  </div>
+  <div class="contacts">
+    <div class="phone" v-html="phone_link(user.mobile)"></div>
+    <div class="slack">{{ user.slack }}</div>
+    <div class="email" v-html="email_link(user.email)"></div>
+  </div>
 </div></div>`,
 })
 

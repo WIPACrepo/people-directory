@@ -171,7 +171,7 @@ article .header {
 }
 
 article .user>div {
-    overflow-wrap: break-word;
+    overflow-wrap: anywhere;
     margin: 0;
     padding: 0;
     flex-grow: 0;
@@ -182,8 +182,8 @@ article .user .name {
     width: 14em;
 }
 article .user .user-insts {
+    margin-left: .5em;
     min-width: 14em;
-    margin: auto;
     flex-shrink: 1;
     flex-grow: 1;
 }
@@ -193,26 +193,36 @@ article .user .user-insts span {
 article .user .user-insts span:not(:last-child)::after {
     content: ",";
 }
-article .user .phone {
+article .user .profiles {
+    margin-left: .5em;
     width: 10em;
 }
-article .user .email {
+article .user .phone, article .user .github, article .user .slack, article .user .orcid, article .user .email {
+    display: inline-block;
+}
+article .user .github::after,
+article .user .slack::after,
+article .user .phone::after {
+    content: " | "
+}
+article .user .contacts {
     width: 18em;
+    margin-left: .5em;
     text-align: right;
 }
 @media all and (min-width: 1100px) {
-    article .user .phone {
+    article .user .profiles {
         width: 11em;
     }
-    article .user .email {
+    article .user .contacts {
         width: 22em;
     }
 }
 @media all and (min-width: 1200px) {
-    article .user .phone {
+    article .user .profiles {
         width: 12em;
     }
-    article .user .email {
+    article .user .contacts {
         width: 22em;
     }
 }

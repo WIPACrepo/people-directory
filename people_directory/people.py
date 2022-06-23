@@ -11,7 +11,7 @@ import krs.users
 
 
 USER_DETAILS = ['firstName', 'lastName', 'email', 'username']
-USER_ATTRS = ['mobile']
+USER_ATTRS = ['mobile', 'slack', 'github', 'orcid']
 
 
 class People:
@@ -38,7 +38,7 @@ class People:
             inst = insts[group_path]
             inst['group_path'] = group_path
 
-            if 'name' not in inst or 'cite' not in inst:
+            if 'name' not in inst or not inst.get('has_mou', False):
                 logging.info(f'bad inst: {group_path}')
                 del insts[group_path]
                 continue

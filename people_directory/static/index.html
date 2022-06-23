@@ -45,16 +45,30 @@
     <div class="user header">
       <div class="name">Name</div>
       <div class="user-insts">Institution</div>
-      <div class="phone">Phone</div>
-      <div class="email">E-mail Address</div>
+      <div class="profiles">
+        <div class="github">GitHub</div>
+        <div class="orcid">ORCID</div>
+      </div>
+      <div class="contacts">
+        <div class="phone">Phone</div>
+        <div class="slack">Slack</div>
+        <div class="email">E-mail</div>
+      </div>
     </div>
     <vue-display class="user_list" v-bind:insts="insts" v-bind:users="users" v-bind:filtered_users="filtered_users" v-bind:filtered_insts="filtered_insts">
     {% for user in sorted(users.values(), key=lambda x: (x['lastName']+x['firstName']).lower()) %}
     <div class="user">
       <div class="name">{{ user['lastName'] }}, {{ user['firstName'] }}{% if 'IL' in user %} [IL]{% end %}</div>
       <div class="user-insts">{% for inst in user['institutions'] %}<span>{{ insts[inst]['name'] if inst in insts else '' }}</span>{% end %}</div>
-      <div class="phone">{{ user['mobile'] }}</div>
-      <div class="email">{{ user['email'] }}</div>
+      <div class="profiles">
+        <div class="github">{{ user['github'] }}</div>
+        <div class="orcid">{{ user['orcid'] }}</div>
+      </div>
+      <div class="contacts">
+        <div class="phone">{{ user['mobile'] }}</div>
+        <div class="slack">{{ user['slack'] }}</div>
+        <div class="email">{{ user['email'] }}</div>
+      </div>
     </div>
     {% end %}
     </vue-display>
