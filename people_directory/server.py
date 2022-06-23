@@ -11,7 +11,8 @@ import os
 
 from tornado.web import RequestHandler, HTTPError
 from tornado.escape import xhtml_escape
-from rest_tools.server import RestServer, from_environment
+from rest_tools.server import RestServer
+from wipac_dev_tools import from_environment
 
 from .people import People
 
