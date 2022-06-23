@@ -13,6 +13,7 @@ import krs.users
 USER_DETAILS = ['firstName', 'lastName', 'email', 'username']
 USER_ATTRS = ['mobile']
 
+
 class People:
     """Cache for Keycloak user info"""
     def __init__(self, experiment):
