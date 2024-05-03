@@ -2,6 +2,15 @@
 
 <!--next-version-placeholder-->
 
+## v1.0.13 (2024-05-03)
+
+### Other
+
+* Fix py-versions matrix ([`e746813`](https://github.com/WIPACrepo/people-directory/commit/e7468138a90298a2a59b2c7295a5b646cc86a9db))
+* Fix semantic release version ([`328398c`](https://github.com/WIPACrepo/people-directory/commit/328398ce7421d3c984b0b620e7e8b4c5e5c411d9))
+* Update python version and deps ([#4](https://github.com/WIPACrepo/people-directory/issues/4)) ([`5de7c5f`](https://github.com/WIPACrepo/people-directory/commit/5de7c5f5d117614e60e7fab83d663c8e7837d005))
+* Bump py-versions CI release v2.1 ([#3](https://github.com/WIPACrepo/people-directory/issues/3)) ([`0bc2388`](https://github.com/WIPACrepo/people-directory/commit/0bc2388d87721a9f2c36169ed58fb378fd2f1a76))
+
 ## v1.0.12 (2022-06-23)
 
 
