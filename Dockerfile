@@ -1,14 +1,16 @@
-FROM python:3.9
+FROM python:3.10
 
 RUN useradd -m -U app
-
-COPY requirements.txt ./
-RUN pip install --no-cache-dir -r requirements.txt
 
 WORKDIR /home/app
 USER app
 
 COPY . .
+
+USER root
+RUN pip install --no-cache-dir -e .
+
+USER app
 
 ENV PYTHONPATH=/home/app
 
