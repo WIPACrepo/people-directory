@@ -27,5 +27,11 @@ logformat = '%(asctime)s %(levelname)s %(name)s %(module)s:%(lineno)s - %(messag
 logging.basicConfig(format=logformat, level=setlevel[str(config['LOG_LEVEL']).upper()])
 
 # start server
-create_server()
-asyncio.get_event_loop().run_forever()
+async def main():
+    s = create_server()
+    try:
+        await asyncio.Event().wait()
+    finally:
+        await s.stop()
+
+asyncio.run(main())
