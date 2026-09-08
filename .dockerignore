@@ -1,0 +1,16 @@
+# NOTE: do NOT add '.git' here — it is required for setuptools-scm builds (see Dockerfile)
+**/__pycache__/
+**/*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+env/
+venv/
+.venv/
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+.coverage*
+htmlcov/
+UNKNOWN.egg-info/

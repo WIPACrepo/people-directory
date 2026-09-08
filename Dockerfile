@@ -1,17 +1,30 @@
-FROM python:3.10
+FROM python:3.14
 
-RUN useradd -m -U app
+RUN groupadd -g 1000 app && useradd -m -g 1000 -u 1000 app
 
-WORKDIR /home/app
+RUN mkdir /app
+WORKDIR /app
+
+COPY pyproject.toml /app/pyproject.toml
+COPY README.md /app/README.md
+COPY LICENSE /app/LICENSE
+COPY people_directory /app/people_directory
+
+RUN chown -R app:app /app
+
 USER app
 
-COPY . .
+RUN git config --global --add safe.directory /app
 
-USER root
-RUN pip install --no-cache-dir -e .
+ENV VIRTUAL_ENV=/app/venv
 
-USER app
+RUN python3 -m venv $VIRTUAL_ENV
 
-ENV PYTHONPATH=/home/app
+ENV PATH="$VIRTUAL_ENV/bin:$PATH"
+
+ARG VERSION
+ENV SETUPTOOLS_SCM_PRETEND_VERSION_FOR_PEOPLE_DIRECTORY=$VERSION
+
+RUN --mount=type=bind,source=.git,target=.git,ro pip install --no-cache .
 
 CMD ["python", "-m", "people_directory"]

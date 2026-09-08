@@ -1,7 +1,5 @@
 # Changelog
 
-<!--next-version-placeholder-->
-
 ## v1.0.13 (2024-05-03)
 
 ### Other
