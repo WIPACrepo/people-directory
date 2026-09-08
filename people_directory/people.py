@@ -1,14 +1,15 @@
 import asyncio
-from collections import defaultdict
-from datetime import datetime
-from functools import partial
 import logging
+from collections import defaultdict
+from datetime import UTC, datetime
+from functools import partial
 
-import krs.token
 import krs.groups
 import krs.institutions
+import krs.token
 import krs.users
 
+logger = logging.getLogger(__name__)
 
 USER_DETAILS = ['firstName', 'lastName', 'email', 'username']
 USER_ATTRS = ['mobile', 'slack', 'github', 'orcid']
@@ -29,17 +30,17 @@ class People:
 
     async def update(self):
         """Get data from Keycloak"""
-        logging.info('People.update()')
+        logger.info('People.update()')
         insts = await krs.institutions.list_insts(self.experiment, rest_client=self.krs_client)
 
         users = defaultdict(dict)
         for group_path in sorted(insts):
-            logging.debug(f'updating inst {group_path}')
+            logger.debug(f'updating inst {group_path}')
             inst = insts[group_path]
             inst['group_path'] = group_path
 
             if 'name' not in inst or not inst.get('has_mou', False):
-                logging.info(f'bad inst: {group_path}')
+                logger.info(f'bad inst: {group_path}')
                 del insts[group_path]
                 continue
 
@@ -65,10 +66,10 @@ class People:
         # get user details
         for username in sorted(users):
             if 'institutions' not in users[username]:
-                logging.info(f'user not in any institution, so dropping: {username}')
+                logger.info(f'user not in any institution, so dropping: {username}')
                 del users[username]
                 continue
-            logging.debug(f'updating user {username}')
+            logger.debug(f'updating user {username}')
             ret = await krs.users.user_info(username, rest_client=self.krs_client)
             if ret.get('firstName', '') == '' or ret.get('lastName', '') == '':
                 del users[username]
@@ -81,8 +82,8 @@ class People:
         # update state
         self.institutions = insts
         self.users = users
-        self.last_update = datetime.utcnow()
-        logging.info('done with update()')
+        self.last_update = datetime.now(UTC)
+        logger.info('done with update()')
 
         # call again
         loop = asyncio.get_event_loop()

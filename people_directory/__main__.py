@@ -21,7 +21,7 @@ default_config = {
 }
 config = from_environment(default_config)
 if config['LOG_LEVEL'].upper() not in setlevel:
-    raise Exception('LOG_LEVEL is not a proper log level')
+    raise ValueError('LOG_LEVEL is not a proper log level')
 logformat = '%(asctime)s %(levelname)s %(name)s %(module)s:%(lineno)s - %(message)s'
 
 logging.basicConfig(format=logformat, level=setlevel[config['LOG_LEVEL'].upper()])
