@@ -29,23 +29,26 @@ def recursive_escape(data):
 
 
 def escape_json(data, key=None):
-    ret = {} if key else []
-    for item in data:
-        if key and key not in item:
-            continue
-        item = recursive_escape(item)
-        if key:
+    if key:
+        ret = {}
+        for item in data:
+            if key not in item:
+                continue
+            item = recursive_escape(item)
             ret[item[key]] = item
-        else:
-            ret.append(item)
-    return ret
+        return ret
+    else:
+        ret = []
+        for item in data:
+            ret.append(recursive_escape(item))
+        return ret
 
 
 class Main(RequestHandler):
-    def initialize(self, people):
+    def initialize(self, people):  # ty: ignore[invalid-method-override]
         self.people = people
 
-    async def get(self, *args):
+    async def get(self, *args):  # ty: ignore[invalid-method-override]
         # escape data, just in case
         insts = escape_json(self.people.institutions.values(), 'group_path')
         users = escape_json(self.people.users.values(), 'username')
@@ -56,10 +59,10 @@ class Main(RequestHandler):
 
 
 class Health(RequestHandler):
-    def initialize(self, people):
+    def initialize(self, people):  # ty: ignore[invalid-method-override]
         self.people = people
 
-    async def get(self):
+    async def get(self):  # ty: ignore[invalid-method-override]
         self.write({
             'now': datetime.now(UTC).isoformat(),
             'last_update': self.people.last_update.isoformat() if self.people.last_update else 'None',
