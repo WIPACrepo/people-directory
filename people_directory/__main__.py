@@ -20,12 +20,18 @@ default_config = {
     'LOG_LEVEL': 'INFO',
 }
 config = from_environment(default_config)
-if config['LOG_LEVEL'].upper() not in setlevel:
-    raise Exception('LOG_LEVEL is not a proper log level')
+if str(config['LOG_LEVEL']).upper() not in setlevel:
+    raise ValueError('LOG_LEVEL is not a proper log level')
 logformat = '%(asctime)s %(levelname)s %(name)s %(module)s:%(lineno)s - %(message)s'
 
-logging.basicConfig(format=logformat, level=setlevel[config['LOG_LEVEL'].upper()])
+logging.basicConfig(format=logformat, level=setlevel[str(config['LOG_LEVEL']).upper()])
 
 # start server
-create_server()
-asyncio.get_event_loop().run_forever()
+async def main():
+    s = create_server()
+    try:
+        await asyncio.Event().wait()
+    finally:
+        await s.stop()
+
+asyncio.run(main())

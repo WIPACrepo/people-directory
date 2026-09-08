@@ -2,18 +2,19 @@
 Server for people directory
 """
 
-from datetime import datetime, timedelta
 import json
 import logging
-import re
 import os
+import re
+from datetime import UTC, datetime, timedelta
 
-from tornado.web import RequestHandler
 from rest_tools.server import RestServer
+from tornado.web import RequestHandler
 from wipac_dev_tools import from_environment
 
 from .people import People
 
+logger = logging.getLogger(__name__)
 
 CLEANR = re.compile('<.*?>')
 
@@ -28,42 +29,45 @@ def recursive_escape(data):
 
 
 def escape_json(data, key=None):
-    ret = {} if key else []
-    for item in data:
-        if key and key not in item:
-            continue
-        item = recursive_escape(item)
-        if key:
+    if key:
+        ret = {}
+        for item in data:
+            if key not in item:
+                continue
+            item = recursive_escape(item)
             ret[item[key]] = item
-        else:
-            ret.append(item)
-    return ret
+        return ret
+    else:
+        ret = []
+        for item in data:
+            ret.append(recursive_escape(item))
+        return ret
 
 
 class Main(RequestHandler):
-    def initialize(self, people):
+    def initialize(self, people):  # ty: ignore[invalid-method-override]
         self.people = people
 
-    async def get(self, *args):
+    async def get(self, *args):  # ty: ignore[invalid-method-override]
         # escape data, just in case
         insts = escape_json(self.people.institutions.values(), 'group_path')
         users = escape_json(self.people.users.values(), 'username')
         for u in users.values():
             if 'institution' not in u:
-                logging.info(f'{u}')
+                logger.info(f'{u}')
         self.render('index.html', json=json, insts=insts, users=users)
 
 
 class Health(RequestHandler):
-    def initialize(self, people):
+    def initialize(self, people):  # ty: ignore[invalid-method-override]
         self.people = people
 
-    async def get(self):
+    async def get(self):  # ty: ignore[invalid-method-override]
         self.write({
-            'now': datetime.utcnow().isoformat(),
+            'now': datetime.now(UTC).isoformat(),
             'last_update': self.people.last_update.isoformat() if self.people.last_update else 'None',
         })
-        if (not self.people.last_update) or datetime.utcnow() - self.people.last_update > timedelta(hours=1):
+        if (not self.people.last_update) or datetime.now(UTC) - self.people.last_update > timedelta(hours=1):
             self.set_status(400)
 
 
