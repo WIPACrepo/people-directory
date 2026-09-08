@@ -1,25 +1,33 @@
-# HANDOFF — pyproject/CI modernization plan
+# HANDOFF — pyproject/CI modernization (implementation in progress)
 
-**Status (2026-09-08):** PLAN.md rewritten with all 8 owner decisions addressed. No code changes yet (user asked for plan only).
+**Status (2026-09-08):** Partially implemented. Commit `84a825c` on branch `new-py`.
 
-## Decisions confirmed
-1. Python range → `>=3.12, <3.15` (3.10 EOL Oct 2026)
-2. Keep unpublished (mode PACKAGING, no PyPI token)
-3. Keep `motor` dependency
-4. Tests → smoke/import check only (no pytest, no coverage gate)
-5. Docker → BUILD only (no CVMFS)
-6. Rename workflow to `wipac-cicd.yml`; delete `docker.yaml`
-7. Delete `setup.py`
-8. ruff-modernize-rules defaults (I,FA; max-complexity 15; max-statements 50)
+## Done (committed)
+- `pyproject.toml` — created, TOML-validated with stdlib tomllib. PEP 621: `[build-system]` setuptools>=78.1 + setuptools-scm; `[project]` name/description/readme/license MIT, keywords WIPAC, classifiers 3.12/3.13/3.14, `requires-python = ">=3.12, <3.15"`, `dynamic = ["version"]`; deps = motor, tornado, wipac-dev-tools, wipac-keycloak-rest-services, wipac-rest-tools; `[project.optional-dependencies]` tests (coverage/pytest/pytest-asyncio/pytest-cov/pytest-mock/ruff) + mypy (auto-generated shape); authors; urls (GitHub only — no PyPI); `[tool.setuptools]` packages=[people_directory], package-data `"*" = ["py.typed","static/*"]`; `[tool.setuptools_scm]` fallback; `[tool.pytest.ini_options]` markers role; `[tool.coverage.*]` migrated; `[tool.ruff]`/`[tool.ruff.lint]`
+- `people_directory/__init__.py` — removed `__version__`/`version_info`, added setuptools-scm note
+- `.github/workflows/wipac-cicd.yml` — NEW (replaces `wipac_cicd.yaml`): py-versions@v2.8, lint-python@v1.33 (defaults I,FA; max-complexity 15; max-statements 50), py-setup@v5.12 (PACKAGING, py_min 3.12, py_max 3.14, package_dirs, author/keywords to prevent churn, auto_mypy), py-dependencies@v3.4, tests (smoke: compileall + import, no pytest), docker-build (push:false), release-version@v1.8, tag-and-release@v1.33 (publish-to-pypi:false, artifact py-dependencies-logs), image-publish@v1.33 (wipacrepo/people-directory, BUILD, VERSION build-arg, extra tag)
+- `.github/workflows/container.yml` — NEW (manual workflow_dispatch → image-publish BUILD)
+- Removed: `wipac_cicd.yaml`, `docker.yaml`, `setup.py`, `setup.cfg`
+- `.github/dependabot.yml` — NEW (pip + github-actions weekly, matches py-setup action output)
+- `Dockerfile` — python:3.14, app user gid/uid 1000, targeted COPY (pyproject/README/LICENSE/people_directory), venv in /app, ARG VERSION → SETUPTOOLS_SCM_PRETEND_VERSION_FOR_PEOPLE_DIRECTORY, `pip install --no-cache .` with bind-mounted .git, CMD python -m people_directory
+- `.dockerignore` — excludes junk, does NOT exclude .git
+- `README.md` — badges replaced w/ action-exact output (no PyPI/to kei), metadata section added (URLs only)
+- `CHANGELOG.md` — removed `<!--next-version-placeholder-->`
+- `setupenv.sh` — `pip install -e .[tests,mypy]`
 
-## Done
-- Analyzed current repo + iceprod reference + wipac-dev-workflows reusable workflows + helper actions + PyPI dep versions
-- Wrote full plan in PLAN.md (phases 1–6, risks)
+## Validation done
+- `py_compile` of all package modules: OK
+- `tomllib` parse: OK
+- Ruff 0.16.6 (aarch64 binary in /tmp/pi-agent-tmp/tmp.q9mnCCvcc8/ruff-bin) against `people_directory/`: **13 errors** — all pre-existing style/deprecation (e.g. DTZ003 utcnow, LOG015 root logger, B008, UP) EXCEPT the initial `W503/W504` config error (fixed — removed from ignore; ruff dropped those rules)
 
-## Remaining (next agent, when approved)
-- Execute: create pyproject.toml, remove __version__/version_info, rewrite workflows (wipac-cicd.yml, delete docker.yaml, optional container.yml), update Dockerfile (python:3.14, setuptools-scm + ARG VERSION), delete setup.py, update setupenv.sh
-- Validate: local install/build (static/ packaging), ruff/ty, branch CI run, release pipeline
+## Remaining (next agent)
+1. **Decide ruff errors**: pre-existing 13 — add to `[tool.ruff.lint.ignore]` (to match old flake8 tolerance) or fix code. Recommend ignoring to keep diff minimal: likely codes = DTZ (utcnow), LOG015, B008 (default args), UP/SIM (e.g. datetime.utcnow, .items() usage), etc. Run: `/tmp/pi-agent-tmp/tmp.q9mnCCvcc8/ruff-bin check people_directory/` to enumerate.
+2. **YAML lint sanity**: no yaml parser available in sandbox; visually verified workflows match iceprod syntax.
+3. **Verify py-setup action will not churn**: compare generated output expectations — name derivation ("people-directory" from people_directory), deps sorted (motor, tornado, wipac-dev-tools, wipac-keycloak-rest-services, wipac-rest-tools = alphabetical ✓), package-data "*" (action keeps existing + ensures py.typed; we added static/* — action may rewrite to just py.typed? NOTE: `_tool_setuptools_packagedata_star` preserves existing entries, so static/* stays ✓), mypy extra = union of all extras (action regenerates: tests+coverage... = same ✓), authors/keywords preserved.
+4. **Update HANDOFF/PLAN.md** after completion; report to user.
+5. **Consider**: `.gitattributes` (setup.cfg merge=ours — now obsolete; optional), `UNKNOWN.egg-info/` (junk, gitignored, was already untracked), and whether `git safe.directory` bind-mount works for `pip install` with BuildKit (validate on CI).
+6. **Possible gotcha**: `tag-and-release` requires git tags; existing tags are `1.0.13` (no `v`) — first release computes from them; watch first run.
 
 ## Notes
-- Scratch clones live in /tmp/pi-agent-tmp/<tmpdir>/ (sandboxed); repo is /home/dschultz/Documents/github/people-directory
-- Branch: new-py; PLAN.md + HANDOFF.md committed (co-authored by AI)
+- Sandbox: no pip/venv/network installs; can only download binaries (ruff) to /tmp/pi-agent-tmp/
+- Repo: /home/dschultz/Documents/github/people-directory; scratch: /tmp/pi-agent-tmp/tmp.q9mnCCvcc8/ (psa=py-setup-action src, iceprod-ref, wipac-workflows, pda, pva)
